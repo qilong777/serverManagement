@@ -63,13 +63,13 @@ const removeStudent = (id) => {
   })
 }
 
-const changeStudent = ({ id, name, classId }) => {
+const changeStudent = ({ id, name, classId, sex }) => {
   const url = `/api/teacher/student/${id}`
   return request({
     method: 'put',
     url,
     data: {
-      name, classId
+      name, classId, sex
     }
   })
 }

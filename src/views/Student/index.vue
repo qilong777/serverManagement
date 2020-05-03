@@ -5,11 +5,19 @@
         v-model="data"
         :options="options"
         :props="props"
-        label="name"
         collapse-tags
         clearable
       />
       <el-button type="primary" @click="searchStudent">查询</el-button>
+      <el-upload
+        class="upload"
+        action="/api/teacher/importStudent"
+        :show-file-list="false"
+        :on-success="uploadSuccess"
+        :before-upload="beforeUpload"
+      >
+        <el-button size="small" type="success">导入学生信息</el-button>
+      </el-upload>
     </div>
     <el-table
       v-loading="loading"
@@ -27,6 +35,14 @@
         label="姓名"
         width="180"
       />
+      <el-table-column
+        label="性别"
+        width="180"
+      >
+        <template slot-scope="scope">
+          <el-tag size="medium">{{ scope.row.sex === 1?'男':'女' }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="className"
         label="班级"
@@ -83,12 +99,17 @@
           <el-form-item prop="name" label="姓名">
             <el-input v-model="form.name" placeholder="请输入姓名" />
           </el-form-item>
+          <el-form-item prop="sex" label="性别">
+            <el-radio-group v-model="form.sex">
+              <el-radio :label="1">男</el-radio>
+              <el-radio :label="0">女</el-radio>
+            </el-radio-group>
+          </el-form-item>
           <el-form-item prop="classId" label="班级">
             <el-cascader
               v-model="form.classId"
               :options="options"
               :props="props1"
-              label="name"
               collapse-tags
               clearable
             />
@@ -131,6 +152,7 @@ export default {
       form: {
         id: '',
         name: '',
+        sex: '',
         classId: ''
       },
       // 登录表单验证规则
@@ -189,6 +211,7 @@ export default {
       const studentInfo = this.studentList[index]
       this.form.id = studentInfo.id
       this.form.name = studentInfo.name
+      this.form.sex = studentInfo.sex
       this.form.classId = [studentInfo.academyId, studentInfo.professionId, studentInfo.classId]
       this.dialogShow = true
     },
@@ -214,6 +237,7 @@ export default {
           const res = await this.$api.changeStudent({
             id: this.form.id,
             name: this.form.name,
+            sex: this.form.sex,
             classId: this.form.classId[2]
           })
           if (res.status === 1) {
@@ -226,6 +250,22 @@ export default {
           this.changing = false
         }
       })
+    },
+    uploadSuccess(res) {
+      if (res.status === 1) {
+        this.$message.success(res.msg)
+        this.searchStudent()
+      } else {
+        this.$message.error(res.msg)
+      }
+    },
+    beforeUpload(file) {
+      const isXLS = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      if (!isXLS) {
+        this.$message.error('上传头像图片只能是 JPG或PNG 格式!')
+        return false
+      }
+      return true
     }
   }
 }
@@ -237,6 +277,9 @@ export default {
   .select{
     width: 300px;
     margin: 0 auto;
+    .upload{
+      margin: 20px 80px;
+    }
   }
   .student-table{
     height: 500px;
