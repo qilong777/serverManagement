@@ -9,13 +9,13 @@ import Layout from '@/layout'
 export const constantRoutes = [
   {
     path: '/login',
-    component: () => import('@/views/Login'),
+    component: () => import('views/Login'),
     hidden: true,
     meta: { title: '教师登录' }
   },
   {
     path: '/404',
-    component: () => import('@/views/error-page/404'),
+    component: () => import('views/error-page/404'),
     hidden: true
   },
   {
@@ -29,7 +29,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/Home'),
+        component: () => import('views/Home/index'),
         name: 'Home',
         meta: { title: '首页', icon: 'user', noCache: true }
       }
@@ -42,9 +42,22 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('views/Student'),
+        component: () => import('views/Student/index'),
         name: 'Student',
         meta: { title: '学生管理', icon: 'people', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/practice',
+    component: Layout,
+    redirect: '/practice/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('views/Practice/index'),
+        name: 'Practice',
+        meta: { title: '练习管理', icon: 'documentation', noCache: true }
       }
     ]
   },
@@ -69,7 +82,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/profile/index'),
+        component: () => import('views/profile/index'),
         name: 'Profile',
         meta: { title: 'Profile', icon: 'user', noCache: true }
       }

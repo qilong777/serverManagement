@@ -73,7 +73,19 @@ const changeStudent = ({ id, name, classId, sex }) => {
     }
   })
 }
+const getSubjects = () => {
+  const url = `/api/teacher/getSubjects`
+  return request({ url })
+}
 
+const getPracticeBySubjectId = (data) => {
+  const url = `/api/teacher/practice`
+  return request({
+    method: 'post',
+    url,
+    data
+  })
+}
 export default {
   login,
   changePassword,
@@ -82,5 +94,7 @@ export default {
   getClassTree,
   getStudentByClassId,
   removeStudent,
-  changeStudent
+  changeStudent,
+  getSubjects,
+  getPracticeBySubjectId
 }
