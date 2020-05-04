@@ -22,6 +22,14 @@
         label="科目"
         width="180"
       />
+      <el-table-column
+        label="考试时长"
+        width="180"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.time+'分钟' }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
@@ -88,6 +96,9 @@
               clearable
             />
           </el-form-item>
+          <el-form-item label="考试时长">
+            <el-input v-model="form.time" placeholder="请输入考试时长" />
+          </el-form-item>
           <!-- 选项 -->
           <el-form-item label="试题文件">
             <el-upload
@@ -146,7 +157,8 @@ export default {
       form: {
         id: '',
         subjectId: '',
-        classIds: []
+        classIds: [],
+        time: 0
       },
       fileList: [],
       updata: {
@@ -209,6 +221,7 @@ export default {
       this.form.subjectId = [examInfo.subjectId]
       this.form.subjectName = examInfo.subjectName
       this.form.classIds = this.getClassIds(examInfo.classIds)
+      this.form.time = examInfo.time
       this.fileList = []
       this.dialogShow = true
     },
@@ -218,6 +231,7 @@ export default {
       this.form.id = ''
       this.form.subjectId = []
       this.form.classIds = []
+      this.form.time = ''
       this.dialogShow = true
     },
     async removeExam(index) {
@@ -288,10 +302,11 @@ export default {
       let classIds = this.form.classIds.map(ele => ele[2])
       const id = this.form.id
       const subjectId = this.form.subjectId[0]
+      const time = this.form.time
       classIds = classIds.join(',')
 
       if (this.isUpdate) {
-        this.updata = Object.assign(this.updata, { id, subjectId, classIds })
+        this.updata = Object.assign(this.updata, { id, subjectId, classIds, time })
         if (this.$refs.upload.uploadFiles.length === 0) {
           const res = await this.$api.changeExam(this.updata)
           if (res.status === 1) {
@@ -305,7 +320,7 @@ export default {
           return
         }
       } else {
-        this.updata = Object.assign(this.updata, { subjectId, classIds })
+        this.updata = Object.assign(this.updata, { subjectId, classIds, time })
         if (this.$refs.upload.uploadFiles.length === 0) {
           this.changing = false
           this.$message.error('文件不能为空')
@@ -330,7 +345,7 @@ export default {
   }
   .exam-table{
     height: 500px;
-    width: 400px;
+    width: 600px;
     margin: 0 auto;
   }
   .page-list-wrapper{
