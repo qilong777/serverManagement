@@ -30,7 +30,7 @@
 
 <script>
 import { verifySrc } from '@/baseConst'
-
+import { mapMutations } from 'vuex'
 export default {
   name: 'AccountLogin',
   data() {
@@ -71,6 +71,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setUserInfo']),
     changeVerify() {
       this.verifySrc = verifySrc + Date.now()
     },
@@ -86,14 +87,7 @@ export default {
               message: '登录成功',
               type: 'success'
             })
-            if (this.loginForm.checked) {
-              const id = this.loginForm.id
-              const password = this.$md5(this.loginForm.password)
-              this.$cookie.setItem('userInfo', JSON.stringify({
-                id,
-                password
-              }), 7)
-            }
+            this.setUserInfo(res.data.userInfo)
             this.$router.push('/')
           } else {
             this.changeVerify()

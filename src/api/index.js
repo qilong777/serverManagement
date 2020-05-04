@@ -16,15 +16,13 @@ const login = ({ id, password, verify }) => {
 }
 
 // 修改密码
-const changePassword = ({ email, code, password }) => {
+const changePwd = (pwd) => {
   const url = '/api/teacher/changePassword'
   return request({
     method: 'post',
     url,
     data: {
-      email,
-      code,
-      password: md5(password)
+      pwd: md5(pwd)
     }
   })
 }
@@ -104,9 +102,35 @@ const changePractice = (id, data) => {
   })
 }
 
+const getExamByClassIds = (data) => {
+  const url = `/api/teacher/exam`
+  return request({
+    method: 'post',
+    url,
+    data
+  })
+}
+
+const removeExam = (id) => {
+  const url = `/api/teacher/exam/${id}`
+  return request({
+    method: 'delete',
+    url
+  })
+}
+
+const changeExam = (data) => {
+  const url = `/api/teacher/changeExam`
+  return request({
+    method: 'post',
+    url,
+    data
+  })
+}
+
 export default {
   login,
-  changePassword,
+  changePwd,
   isLogin,
   logOut,
   getClassTree,
@@ -116,5 +140,8 @@ export default {
   getSubjects,
   getPracticeBySubjectId,
   removePractice,
-  changePractice
+  changePractice,
+  getExamByClassIds,
+  removeExam,
+  changeExam
 }

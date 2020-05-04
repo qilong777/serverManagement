@@ -19,7 +19,18 @@ const modules = modulesFiles.keys().reduce((modules, modulePath) => {
 
 const store = new Vuex.Store({
   modules,
-  getters
+  getters,
+  state: {
+    userInfo: {
+      id: '',
+      name: ''
+    }
+  },
+  mutations: {
+    setUserInfo(state, userInfo) {
+      state.userInfo = Object.assign(state.userInfo, userInfo)
+    }
+  }
 })
 
 export default store

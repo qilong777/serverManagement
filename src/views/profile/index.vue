@@ -1,68 +1,44 @@
 <template>
-  <div class="app-container">
-    <div v-if="user">
-      <el-row :gutter="20">
-
-        <el-col :span="6" :xs="24">
-          <user-card :user="user" />
-        </el-col>
-
-        <el-col :span="18" :xs="24">
-          <el-card>
-            <el-tabs v-model="activeTab">
-              <el-tab-pane label="Activity" name="activity">
-                <activity />
-              </el-tab-pane>
-              <el-tab-pane label="Timeline" name="timeline">
-                <timeline />
-              </el-tab-pane>
-              <el-tab-pane label="Account" name="account">
-                <account :user="user" />
-              </el-tab-pane>
-            </el-tabs>
-          </el-card>
-        </el-col>
-
-      </el-row>
-    </div>
+  <div class="profile">
+    <el-tabs :stretch="true" class="profile-wrapper" tab-position="left" type="border-card">
+      <el-tab-pane label="个人信息">
+        <ProfileTab />
+      </el-tab-pane>
+      <el-tab-pane label="修改密码">
+        <ChangePwd />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import UserCard from './components/UserCard'
-import Activity from './components/Activity'
-import Timeline from './components/Timeline'
-import Account from './components/Account'
-
+const ProfileTab = () => import('./ProfileTab')
+const ChangePwd = () => import('./ChangePwd')
 export default {
   name: 'Profile',
-  components: { UserCard, Activity, Timeline, Account },
+  components: {
+    ProfileTab,
+    ChangePwd
+  },
   data() {
     return {
-      user: {},
-      activeTab: 'activity'
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'name',
-      'avatar',
-      'roles'
-    ])
-  },
-  created() {
-    this.getUser()
-  },
-  methods: {
-    getUser() {
-      this.user = {
-        name: this.name,
-        role: this.roles.join(' | '),
-        email: 'admin@test.com',
-        avatar: this.avatar
-      }
     }
   }
 }
 </script>
+
+<style lang='scss'>
+.profile{
+  height: 500px;
+  .profile-wrapper{
+    height: 100%;
+    width: 900px;
+    margin: 0 auto;
+    .el-tabs__header{
+      margin-right: 0;
+      padding-top: 50px;
+      height: 100%;
+    }
+  }
+}
+</style>

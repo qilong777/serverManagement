@@ -23,7 +23,7 @@
       v-loading="loading"
       class="student-table"
       :data="studentList"
-      style="width: 100%"
+      style="width: 900px;margin:0 auto"
     >
       <el-table-column
         prop="id"

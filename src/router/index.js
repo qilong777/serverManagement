@@ -62,6 +62,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/exam',
+    component: Layout,
+    redirect: '/exam/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('views/Exam/index'),
+        name: 'Exam',
+        meta: { title: '考试管理', icon: 'form', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/icon',
     component: Layout,
     redirect: '/icon/index',
@@ -82,9 +95,9 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        component: () => import('views/profile/index'),
+        component: () => import('views/Profile/index'),
         name: 'Profile',
-        meta: { title: 'Profile', icon: 'user', noCache: true }
+        meta: { title: '个人信息', icon: 'user', noCache: true }
       }
     ]
   }
