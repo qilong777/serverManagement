@@ -11,12 +11,12 @@
       <el-button type="primary" @click="searchPractice">查询</el-button>
       <el-upload
         class="upload"
-        action="/api/teacher/importStudent"
+        action="/api/teacher/importPractice"
         :show-file-list="false"
         :on-success="uploadSuccess"
         :before-upload="beforeUpload"
       >
-        <el-button size="small" type="success">导入学生信息</el-button>
+        <el-button size="small" type="success">导入习题数据</el-button>
       </el-upload>
     </div>
     <el-table
@@ -65,7 +65,7 @@
             icon="el-icon-info"
             icon-color="red"
             title="确定要删除吗？"
-            @onConfirm="removeError(scope.$index)"
+            @onConfirm="removePractice(scope.$index)"
           >
             <el-button slot="reference" type="danger" size="mini">删除</el-button>
           </el-popconfirm>
@@ -84,7 +84,7 @@
       />
     </div>
     <el-dialog
-      title="我的错题"
+      title="练习信息"
       :visible.sync="dialogShow"
       width="60%"
       center
@@ -97,35 +97,90 @@
           :model="form"
           :rules="formRules"
         >
-          <!-- 用户名 -->
-          <el-form-item prop="id" label="学号">
-            <el-input v-model="form.id" placeholder="请输入学号" disabled />
-          </el-form-item>
-          <!-- 密码 -->
-          <el-form-item prop="name" label="姓名">
-            <el-input v-model="form.name" placeholder="请输入姓名" />
-          </el-form-item>
-          <el-form-item prop="sex" label="性别">
-            <el-radio-group v-model="form.sex">
-              <el-radio :label="1">男</el-radio>
-              <el-radio :label="0">女</el-radio>
+          <el-form-item prop="type" label="题目类型">
+            <el-radio-group v-model="form.type">
+              <el-radio :label="1">单选题</el-radio>
+              <el-radio :label="2">多选题</el-radio>
+              <el-radio :label="3">填空题</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item prop="classId" label="班级">
+
+          <el-form-item prop="subjectId" label="科目">
             <el-cascader
-              v-model="form.classId"
+              v-model="form.subjectId"
               :options="options"
               :props="props1"
               collapse-tags
               clearable
             />
           </el-form-item>
+          <!-- 问题 -->
+          <el-form-item prop="question" label="问题">
+            <el-input v-model="form.question" placeholder="请输入问题" />
+          </el-form-item>
+          <!-- 选项 -->
+          <div v-if="form.type!==3">
+            <el-form-item
+              v-for="(item,index) in form.options"
+              :key="index"
+              eslint-disable-next-line
+              vue
+              no-use-v-if-with-v-for
+              :label="'选项'+String.fromCharCode(65+index)"
+            >
+              <el-input
+                v-model="form.options[index]"
+                placeholder="请输入选项"
+              />
+            </el-form-item>
+          </div>
+
+          <el-form-item label="答案">
+            <el-select
+              v-if="form.type===1"
+              v-model="form.answer"
+              placeholder="请选择答案"
+            >
+              <el-option
+                v-for="(item,index) in form.options"
+                :key="index"
+                :label="String.fromCharCode(65+index)"
+                :value="String.fromCharCode(65+index)"
+              />
+            </el-select>
+            <el-select
+              v-else-if="form.type===2"
+              key="1"
+              v-model="form.answer1"
+              placeholder="请选择答案"
+              multiple
+            >
+              <el-option
+                v-for="(item,index) in form.options"
+                :key="index"
+                :label="String.fromCharCode(65+index)"
+                :value="String.fromCharCode(65+index)"
+              />
+            </el-select>
+            <el-input v-else v-model="form.answer" placeholder="请输入答案" />
+          </el-form-item>
+          <el-form-item prop="analysis" label="解析">
+            <el-input
+              v-model="form.analysis"
+              type="textarea"
+              placeholder="请输入解析"
+              maxlength="200"
+              show-word-limit
+              resize="none"
+            />
+          </el-form-item>
+
         </el-form>
       </div>
 
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogShow = false">取 消</el-button>
-        <el-button :loading="changing" type="warning" @click="changeStudent()">修 改</el-button>
+        <el-button :loading="changing" type="warning" @click="changePractice">修 改</el-button>
       </span>
     </el-dialog>
   </div>
@@ -152,28 +207,23 @@ export default {
       options: [],
       practiceList: [],
       page: 1,
-      pageSize: 8,
+      pageSize: 5,
       total: 100,
       loading: false,
       form: {
         id: '',
-        name: '',
-        sex: '',
-        classId: ''
+        type: '',
+        subjectId: '',
+        question: '',
+        options: [],
+        answer: '',
+        answer1: [],
+        analysis: ''
       },
       // 登录表单验证规则
       formRules: {
-        // 验证用户名
-        id: [
-          { required: true, message: '请输入学号', trigger: 'blur' }
-        ],
-        // 验证密码
-        name: [
-          { required: true, message: '请输入名字', trigger: 'blur' }
-        ],
-        // 验证验证码
-        classId: [
-          { required: true, message: '请选择班级', trigger: 'blur' }
+        question: [
+          { required: true, message: '请输入问题', trigger: 'blur' }
         ]
       }
     }
@@ -199,14 +249,11 @@ export default {
       }
     },
     async searchPractice() {
-      console.log(1)
-
       this.loading = true
       const res = await this.$api.getPracticeBySubjectId({ ids: this.classIds.join(','), page: this.page, pageSize: this.pageSize })
       if (res.status === 1) {
         this.practiceList = res.data.practiceList
         this.total = res.data.total
-        console.log(this.practiceList)
       } else {
         this.$message.error(res.msg)
       }
@@ -217,16 +264,26 @@ export default {
       this.searchPractice()
     },
     handleEdit(index) {
-      const studentInfo = this.practiceList[index]
-      this.form.id = studentInfo.id
-      this.form.name = studentInfo.name
-      this.form.sex = studentInfo.sex
-      this.form.classId = [studentInfo.academyId, studentInfo.professionId, studentInfo.classId]
+      const practiceInfo = this.practiceList[index]
+      this.form.id = practiceInfo.id
+      this.form.type = practiceInfo.type
+      this.form.subjectId = [practiceInfo.subjectId]
+      this.form.question = practiceInfo.question
+      this.form.options = practiceInfo.options.split('$$')
+      if (practiceInfo.type === 2) {
+        this.form.answer1 = practiceInfo.answer.split('')
+        this.form.answer = ''
+      } else {
+        this.form.answer = practiceInfo.answer
+        this.form.answer1 = []
+      }
+
+      this.form.analysis = practiceInfo.analysis
       this.dialogShow = true
     },
-    async removeError(index) {
+    async removePractice(index) {
       const id = this.practiceList[index].id
-      const res = await this.$api.removeStudent(id)
+      const res = await this.$api.removePractice(id)
       if (res.status === 1) {
         this.$message.success(res.msg)
         this.searchPractice()
@@ -234,19 +291,19 @@ export default {
         // this.$message.error(res.msg)
       }
     },
-    changeStudent() {
-      if (this.form.classId.length === 0) {
-        this.$message.error('请选择班级')
-        return
-      }
+    changePractice() {
       this.$refs.formRef.validate(async valid => {
         if (valid) {
           this.changing = true
-          const res = await this.$api.changeStudent({
-            id: this.form.id,
-            name: this.form.name,
-            sex: this.form.sex,
-            classId: this.form.classId[2]
+          const answer = this.form.type === 2 ? this.form.answer1.join('') : this.form.answer
+          const res = await this.$api.changePractice(this.form.id, {
+            type: this.form.type,
+            subjectId: this.form.subjectId,
+            question: this.form.question,
+            options: this.form.options.join('$$'),
+            answer,
+            analysis: this.form.analysis
+
           })
           if (res.status === 1) {
             this.$message.success(res.msg)
@@ -270,7 +327,7 @@ export default {
     beforeUpload(file) {
       const isXLS = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       if (!isXLS) {
-        this.$message.error('上传头像图片只能是 JPG或PNG 格式!')
+        this.$message.error('上传格式只能是Excel表格!')
         return false
       }
       return true

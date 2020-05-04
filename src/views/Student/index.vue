@@ -78,7 +78,7 @@
       />
     </div>
     <el-dialog
-      title="我的错题"
+      title="学生信息"
       :visible.sync="dialogShow"
       width="60%"
       center
@@ -262,7 +262,7 @@ export default {
     beforeUpload(file) {
       const isXLS = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       if (!isXLS) {
-        this.$message.error('上传头像图片只能是 JPG或PNG 格式!')
+        this.$message.error('上传格式只能是Excel表格!')
         return false
       }
       return true

@@ -86,6 +86,24 @@ const getPracticeBySubjectId = (data) => {
     data
   })
 }
+
+const removePractice = (id) => {
+  const url = `/api/teacher/practice/${id}`
+  return request({
+    method: 'delete',
+    url
+  })
+}
+
+const changePractice = (id, data) => {
+  const url = `/api/teacher/practice/${id}`
+  return request({
+    method: 'put',
+    url,
+    data
+  })
+}
+
 export default {
   login,
   changePassword,
@@ -96,5 +114,7 @@ export default {
   removeStudent,
   changeStudent,
   getSubjects,
-  getPracticeBySubjectId
+  getPracticeBySubjectId,
+  removePractice,
+  changePractice
 }
