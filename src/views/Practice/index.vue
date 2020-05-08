@@ -1,6 +1,7 @@
 <template>
   <div class="practice">
     <div class="select">
+      <span>请选择科目</span>
       <el-cascader
         v-model="data"
         :options="options"
@@ -24,7 +25,13 @@
       class="student-table"
       :data="practiceList"
       style="width: 100%"
+      border
     >
+      <el-table-column
+        prop="id"
+        label="ID"
+        width="180"
+      />
       <el-table-column
         prop="subjectName"
         label="科目"
@@ -229,7 +236,7 @@ export default {
     }
   },
   computed: {
-    classIds() {
+    subjectIds() {
       return this.data.map(ele => {
         return ele[0]
       })
@@ -250,7 +257,7 @@ export default {
     },
     async searchPractice() {
       this.loading = true
-      const res = await this.$api.getPracticeBySubjectId({ ids: this.classIds.join(','), page: this.page, pageSize: this.pageSize })
+      const res = await this.$api.getPracticeBySubjectId({ ids: this.subjectIds.join(','), page: this.page, pageSize: this.pageSize })
       if (res.status === 1) {
         this.practiceList = res.data.practiceList
         this.total = res.data.total
@@ -349,14 +356,14 @@ export default {
 .practice{
   padding: 20px;
   .select{
-    width: 300px;
+    width: 400px;
     margin: 0 auto;
     .upload{
       margin: 20px 80px;
     }
   }
   .student-table{
-    height: 500px;
+    min-height: 500px;
   }
   .page-list-wrapper{
     display: flex;

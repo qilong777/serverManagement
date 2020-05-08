@@ -1,6 +1,7 @@
 <template>
   <div class="student">
     <div class="select">
+      <span>请选择班级</span>
       <el-cascader
         v-model="data"
         :options="options"
@@ -24,6 +25,7 @@
       class="student-table"
       :data="studentList"
       style="width: 900px;margin:0 auto"
+      border
     >
       <el-table-column
         prop="id"
@@ -147,7 +149,7 @@ export default {
       studentList: [],
       page: 1,
       pageSize: 8,
-      total: 100,
+      total: 0,
       loading: false,
       form: {
         id: '',
@@ -275,14 +277,14 @@ export default {
 .student{
   padding: 20px;
   .select{
-    width: 300px;
+    width: 400px;
     margin: 0 auto;
     .upload{
       margin: 20px 80px;
     }
   }
   .student-table{
-    height: 500px;
+    min-height: 500px;
   }
   .page-list-wrapper{
     display: flex;

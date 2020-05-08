@@ -75,6 +75,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/score',
+    component: Layout,
+    redirect: '/score/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('views/Score/index'),
+        name: 'Score',
+        meta: { title: '成绩管理', icon: 'skill', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/icon',
     component: Layout,
     redirect: '/icon/index',

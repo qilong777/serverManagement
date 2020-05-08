@@ -1,6 +1,7 @@
 <template>
   <div class="exam">
     <div class="select">
+      <span>请选择班级</span>
       <el-cascader
         v-model="data"
         :options="options"
@@ -16,7 +17,13 @@
       v-loading="loading"
       class="exam-table"
       :data="examList"
+      border
     >
+      <el-table-column
+        prop="id"
+        label="ID"
+        width="180"
+      />
       <el-table-column
         prop="subjectName"
         label="科目"
@@ -65,7 +72,7 @@
       />
     </div>
     <el-dialog
-      title="练习信息"
+      title="考试信息"
       :visible.sync="dialogShow"
       width="60%"
       center
@@ -337,15 +344,15 @@ export default {
 .exam{
   padding: 20px;
   .select{
-    width: 300px;
+    width: 400px;
     margin: 0 auto;
     .upload{
       margin: 20px 80px;
     }
   }
   .exam-table{
-    height: 500px;
-    width: 600px;
+    min-height: 500px;
+    width: 800px;
     margin: 0 auto;
   }
   .page-list-wrapper{

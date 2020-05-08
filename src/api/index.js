@@ -128,6 +128,33 @@ const changeExam = (data) => {
   })
 }
 
+const getScore = (data) => {
+  const url = `/api/teacher/score`
+  return request({
+    method: 'post',
+    url,
+    data
+  })
+}
+
+const removeScore = ({ examId, studentId }) => {
+  const url = `/api/teacher/score/${studentId}/${examId}`
+  return request({
+    method: 'delete',
+    url
+  })
+}
+
+const changeScore = ({ examId, studentId, score }) => {
+  const url = `/api/teacher/score/${studentId}/${examId}`
+  return request({
+    method: 'put',
+    url,
+    data: {
+      score
+    }
+  })
+}
 export default {
   login,
   changePwd,
@@ -143,5 +170,8 @@ export default {
   changePractice,
   getExamByClassIds,
   removeExam,
-  changeExam
+  changeExam,
+  getScore,
+  removeScore,
+  changeScore
 }
