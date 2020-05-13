@@ -214,7 +214,7 @@ export default {
       options: [],
       practiceList: [],
       page: 1,
-      pageSize: 5,
+      pageSize: 8,
       total: 100,
       loading: false,
       form: {
