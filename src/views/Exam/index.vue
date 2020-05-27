@@ -55,7 +55,7 @@
           <el-button
             type="success"
             size="mini"
-            @click="handleEdit(scope.$index)"
+            @click="handleShow(scope.$index)"
           >预览</el-button>
 
         </template>
@@ -132,6 +132,39 @@
         <el-button :loading="changing" type="warning" @click="submit">{{ isUpdate?'修 改':'上 传' }}</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      title="试题预览"
+      :visible.sync="dialogShow1"
+      width="60%"
+      center
+    >
+      <div class="practice-wrapper">
+        <div v-for="(item, index) in examInfo" :key="index">
+          <p class="title">
+            {{ index+1 }}. {{ getQuestion(item) }}
+            <input v-if="item.type === 3" disabled>
+            ({{ item.score }}分)
+          </p>
+          <el-radio-group v-if="item.type === 1" class="options-wrapper" disabled>
+            <p v-for="(item1,index1) in getOptions(item)" :key="index1" class="options">
+              <el-radio :label="String.fromCharCode(65+index1)">{{ String.fromCharCode(65+index1)+ '. ' + item1 }}</el-radio>
+            </p>
+          </el-radio-group>
+          <el-checkbox-group v-if="item.type === 2" class="options-wrapper" disabled>
+            <p v-for="(item1,index1) in getOptions(item)" :key="index1" class="options">
+              <el-checkbox :label="String.fromCharCode(65+index1)">{{ String.fromCharCode(65+index1)+ '. ' + item1 }}</el-checkbox>
+              <!-- <el-checkbox :label="String.fromCharCode(65+index1)">{{ String.fromCharCode(65+index1)+ '. ' + item1 }}</el-checkbox> -->
+            </p>
+          </el-checkbox-group>
+        </div>
+
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogShow1 = false">取 消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -140,8 +173,10 @@ export default {
   name: 'Exam',
   data() {
     return {
+      examInfo: [],
       isUpdate: false,
       dialogShow: false,
+      dialogShow1: false,
       changing: false,
       data: [],
       props: {
@@ -189,6 +224,20 @@ export default {
     this.searchExam()
   },
   methods: {
+    getQuestion(item) {
+      if (item.type === 3) {
+        return item.question.replace('$$', '')
+      }
+      return item.question
+    },
+    getOptions(item) {
+      if (item.type !== 3) {
+        const options = item.options
+        return options.split('$$')
+      } else {
+        return ''
+      }
+    },
     async getSubjects() {
       const res = await this.$api.getSubjects()
       if (res.status === 1) {
@@ -231,6 +280,18 @@ export default {
       this.form.time = examInfo.time
       this.fileList = []
       this.dialogShow = true
+    },
+    async handleShow(index) {
+      const examInfo = this.examList[index]
+
+      const res = await this.$api.getExamInfoById(examInfo.id)
+      if (res.status === 1) {
+        this.examInfo = res.data.examInfo
+      } else {
+        this.$message.error(res.msg)
+      }
+
+      this.dialogShow1 = true
     },
     handleImport() {
       this.isUpdate = false
@@ -368,6 +429,38 @@ export default {
     }
     .upload{
       padding-left: 150px;
+    }
+  }
+  .practice-wrapper{
+    padding: 10px;
+    .title{
+      font-size: 18px;
+      margin-bottom: 15px;
+      input{
+        font-size: 18px;
+        border-bottom: 1px solid #000;
+        width: 100px;
+        text-align: center;
+      }
+    }
+    .options-wrapper{
+      min-height: 200px;
+      width: 100%;
+    }
+    .options{
+      margin: 10px 0;
+      font-size: 16px;
+      label{
+        display: inline-block;
+        width: 100%;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        &:hover{
+          color: rgb(41, 110, 179);
+          border-color: rgb(41, 110, 179);
+        }
+      }
     }
   }
 }

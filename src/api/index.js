@@ -155,6 +155,56 @@ const changeScore = ({ examId, studentId, score }) => {
     }
   })
 }
+
+const getSubjectByProfessionIds = ({ ids, page, pageSize }) => {
+  const url = `/api/teacher/subject?ids=${ids}&page=${page}&pageSize=${pageSize}`
+  return request({
+    method: 'get',
+    url,
+    data: {
+      ids, page, pageSize
+    }
+  })
+}
+
+const addSubject = ({ name, professionIds }) => {
+  const url = `/api/teacher/subject`
+  return request({
+    method: 'post',
+    url,
+    data: {
+      name, professionIds
+    }
+  })
+}
+
+const removeSubject = (id) => {
+  const url = `/api/teacher/subject/${id}`
+  return request({
+    method: 'delete',
+    url
+  })
+}
+
+const changeSubject = (id, data) => {
+  const url = `/api/teacher/subject/${id}`
+  return request({
+    method: 'put',
+    url,
+    data
+  })
+}
+
+const getProfessions = () => {
+  const url = `/api/teacher/profession`
+  return request({ url })
+}
+
+const getExamInfoById = (id) => {
+  const url = `/api/teacher/exam/${id}`
+  return request({ url })
+}
+
 export default {
   login,
   changePwd,
@@ -173,5 +223,11 @@ export default {
   changeExam,
   getScore,
   removeScore,
-  changeScore
+  changeScore,
+  getSubjectByProfessionIds,
+  getProfessions,
+  addSubject,
+  removeSubject,
+  changeSubject,
+  getExamInfoById
 }

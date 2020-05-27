@@ -36,6 +36,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/subject',
+    component: Layout,
+    redirect: '/subject/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('views/Subject/index'),
+        name: 'Subject',
+        meta: { title: '科目管理', icon: 'tab', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/student',
     component: Layout,
     redirect: '/student/index',
